@@ -1,0 +1,32 @@
+version: '3'
+services:
+  # should rename it with my lastname here but I want it to look shorter and prettier
+  web:
+    build: .
+    ports:
+      - "8880:80"
+      - "8843:443"
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - front-back
+  db:
+    image: mysql:5.7
+    ports:
+      - "8806:3306"
+    volumes:
+      - ./init.sql:/data/application/init.sql
+      # you asked to name folder "dbfile" but I want it shorter
+      - ./db:/var/lib/mysql
+    command: mysqld --init-file /data/application/init.sql
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    networks:
+      - front-back
+
+networks:
+  front-back:
+    # googled it, bridge is the default, but let's make it explicitly clear
+    driver: bridge
